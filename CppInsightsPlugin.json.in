@@ -1,0 +1,10 @@
+{
+    \"Name\" : \"CppInsightsPlugin\",
+    \"Version\" : \"0.0.1\",
+    \"CompatVersion\" : \"0.0.1\",
+    \"Vendor\" : \"Ahmet Bilgili\",
+    \"Copyright\" : \"MIT License\",
+    \"License\" : \"MIT License\",
+    \"Description\" : \"CppInsights tool for debugging CPP templates\",
+    $$dependencyList
+}
