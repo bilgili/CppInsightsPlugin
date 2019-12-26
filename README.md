@@ -41,6 +41,3 @@ If you compiled the plugin, it will be installed automatically.
 * OSX: ~/Library/Application Support/QtProject/Qt Creator/plugins/**\<version\>**  
 * Windows: %LOCALAPPDATA%\QtProject\qtcreator\plugins\\**\<version\>**  
 Replace **\<version\>**  with your Qt Creator version (ie: 4.11.0)
-
-## Binaries
-Binaries for QtCreator 4.11 and Qt 5.14 can be found in the [https://github.com/bilgili/CppInsightsPlugin/actions?query=workflow%3A%22QMake+Build+Matrix%22](https://github.com/bilgili/CppInsightsPlugin/actions?query=workflow%3A%22QMake+Build+Matrix%22).
