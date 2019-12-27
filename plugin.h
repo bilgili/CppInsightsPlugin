@@ -4,7 +4,6 @@
 
 #include <extensionsystem/iplugin.h>
 
-#include <QProcess>
 #include <QSharedPointer>
 
 namespace CppInsightsPlugin {
@@ -27,7 +26,6 @@ public:
 private:
   void triggerAction();
   QSharedPointer<Settings> m_settings;
-  QProcess *m_process;
 };
 
 } // namespace Internal
