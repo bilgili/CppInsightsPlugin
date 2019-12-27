@@ -2,6 +2,8 @@
 
 This plugin aims simplifying usage of [CppInsights](https://github.com/andreasfertig/cppinsights) inside the QtCreator. The LLVM backend of CppInsights supports compile commands [json file](https://clang.llvm.org/docs/JSONCompilationDatabase.html) via -p "folder" argument and this plugin utilizes this mechanism to generate cpp files. 
 
+## Usage
+
 CMake can generate the compile commands file by enabling [CMAKE_EXPORT_COMPILE_COMMANDS](https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html). **compile_commands.json** is then generated at the build folder.
 
 When CppInsights plugin is enabled in QtCreator, a tab named CppInsights appear in the Options/C++. In this tab, the name of the [insights executable](https://github.com/andreasfertig/cppinsights/releases) and mime types are expected. 
