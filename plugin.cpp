@@ -170,4 +170,4 @@ void Plugin::triggerAction() {
 
 }
 } // namespace Internal
-} // namespace MyPlugin
+} // namespace CppInsightsPlugin
