@@ -23,7 +23,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="commandLabel">
         <property name="text">
-         <string>CppInsights Format command:</string>
+         <string>CppInsights command:</string>
         </property>
         <property name="buddy">
          <cstring>command</cstring>
