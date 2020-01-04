@@ -1,3 +1,6 @@
+// Copyright (c) 2019 Ahmet Bilgili
+// Licensed under the MIT licence
+
 #include "settingspage.h"
 #include "constants.h"
 #include "settings.h"

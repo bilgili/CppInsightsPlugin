@@ -35,6 +35,43 @@
 #include <QDir>
 #include <QTemporaryFile>
 
+namespace
+{
+bool isCppSightsEnabled(QSharedPointer<CppInsightsPlugin::Internal::Settings> settings) {
+
+  if(settings->cppInsightsTool().isEmpty()) return false;
+
+  ProjectExplorer::Project *project = ProjectExplorer::SessionManager::startupProject();
+  if (!project)
+    return false;
+
+  ProjectExplorer::Target *target = project->activeTarget();
+  if (!target)
+    return false;
+
+  QDir buildBase;
+  if (auto buildConfig = target->activeBuildConfiguration()) {
+    buildBase = QDir(buildConfig->buildDirectory().toString());
+  }
+
+  if (buildBase.isEmpty())
+    return false;
+
+  const QFileInfo buildCommandsFile(buildBase.path() + "/compile_commands.json");
+  if (!buildCommandsFile.exists()) {
+    return false;
+  }
+
+  const auto *node = ProjectExplorer::ProjectTree::currentNode();
+  const auto *fileNode = dynamic_cast<const ProjectExplorer::FileNode *>(node);
+  if (!fileNode) {
+    return false;
+  }
+
+  return true;
+}
+}
+
 namespace CppInsightsPlugin {
 namespace Internal {
 
@@ -46,7 +83,6 @@ bool Plugin::initialize(const QStringList &arguments, QString *errorString)
   auto action = new QAction(tr("CPP Insights compile"), this);
   Core::Command *cmd = Core::ActionManager::registerAction(action, Constants::ACTION_ID,
                                                            Core::Context(Core::Constants::C_GLOBAL));
-  cmd->setDefaultKeySequence(QKeySequence(tr("Ctrl+Alt+Meta+A")));
   connect(action, &QAction::triggered, this, &Plugin::triggerAction);
 
   Core::ActionContainer *menu = Core::ActionManager::createMenu(Constants::MENU_ID);
@@ -61,15 +97,12 @@ bool Plugin::initialize(const QStringList &arguments, QString *errorString)
   connect(ProjectExplorer::ProjectTree::instance(),
           &ProjectExplorer::ProjectTree::currentNodeChanged,
           [=]() {
-            const auto *node = ProjectExplorer::ProjectTree::currentNode();
-            if (!node) {
+            if (!isCppSightsEnabled(m_settings)) {
               return;
             }
 
+            const auto *node = ProjectExplorer::ProjectTree::currentNode();
             const auto *fileNode = dynamic_cast<const ProjectExplorer::FileNode *>(node);
-            if (!fileNode) {
-              return;
-            }
 
             const auto mimeType = Utils::mimeTypeForFile(fileNode->filePath().toString());
             const bool isMimeTypeSupported = m_settings->cppInsightsMimes().indexOf(mimeType) != -1;
@@ -86,36 +119,10 @@ bool Plugin::initialize(const QStringList &arguments, QString *errorString)
 ExtensionSystem::IPlugin::ShutdownFlag Plugin::aboutToShutdown() { return SynchronousShutdown; }
 
 void Plugin::triggerAction() {
-  if (m_settings->cppInsightsTool().isEmpty())
-    return;
-
-  ProjectExplorer::Project *project = ProjectExplorer::SessionManager::startupProject();
-  if (!project)
-    return;
-
-  ProjectExplorer::Target *target = project->activeTarget();
-  if (!target)
-    return;
-
-  QDir buildBase;
-  if (auto buildConfig = target->activeBuildConfiguration()) {
-    buildBase = QDir(buildConfig->buildDirectory().toString());
-  }
-  const QFileInfo buildCommandsFile(buildBase.path() + "/compile_commands.json");
-  if (!buildCommandsFile.exists()) {
-    Core::MessageManager::write(
-        "Missing compile_commands.json file. Enable CMAKE_EXPORT_COMPILE_COMMANDS.");
-    return;
-  }
-
-  if (buildBase.isEmpty())
-    return;
-
-  const auto *node = ProjectExplorer::ProjectTree::currentNode();
-  const auto *fileNode = dynamic_cast<const ProjectExplorer::FileNode *>(node);
-  if (!fileNode) {
-    return;
-  }
+  const auto *project = ProjectExplorer::SessionManager::startupProject();
+  const auto *target = project->activeTarget();
+  const auto buildConfig = target->activeBuildConfiguration();
+  const auto buildBase = QDir(buildConfig->buildDirectory().toString());
 
   const QString folder = Constants::SETTINGS_GROUP;
   const QDir cppInsightsFolder = QDir(buildBase.path() + "/" + folder);
@@ -123,6 +130,12 @@ void Plugin::triggerAction() {
     if (!buildBase.mkdir(folder)) {
       Core::MessageManager::write("Error creating the cppinsights folder in build dir");
     }
+  }
+
+  const auto *node = ProjectExplorer::ProjectTree::currentNode();
+  const auto *fileNode = dynamic_cast<const ProjectExplorer::FileNode *>(node);
+  if (!fileNode) {
+    return;
   }
 
   const auto path = fileNode->filePath();

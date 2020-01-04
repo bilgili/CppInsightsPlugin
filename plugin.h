@@ -1,3 +1,6 @@
+// Copyright (c) 2019 Ahmet Bilgili
+// Licensed under the MIT licence
+
 #pragma once
 
 #include "global.h"
